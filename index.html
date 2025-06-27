@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive YouTube Streaming Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Sacred Stream -->
+    <!-- Application Structure Plan: The application is structured into three logical phases mirroring a typical streaming workflow: 'Preparation', 'Execution', and 'Reference'. This task-oriented design is more intuitive than the manual's linear chapters. Users can quickly navigate to the section most relevant to their immediate needs (e.g., jumping to the 'Execution' checklist on event day). Navigation is handled by a persistent sidebar (or a top bar on mobile), which updates the main content area dynamically. This structure avoids overwhelming the user with information and guides them through the process in a logical, step-by-step manner. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Prerequisites & Pre-Stream Checklist -> Goal: Inform/Task Management -> Viz/Presentation: Interactive HTML Checklists -> Interaction: Clicking checkboxes -> Justification: Allows users to actively track their progress, making the setup process less passive and more organized.
+        - Report Info: Troubleshooting Section -> Goal: Organize/Reference -> Viz/Presentation: Accordion (HTML/CSS/JS) -> Interaction: Clicking a problem reveals the solution -> Justification: Collapses a long list of problems into a scannable format, reducing clutter and helping users find solutions quickly without extensive scrolling.
+        - Report Info: Bitrate Table -> Goal: Compare/Inform -> Viz/Presentation: Bar Chart (Chart.js/Canvas) -> Interaction: Hovering over bars shows tooltips with exact values -> Justification: A visual chart makes it easier to understand the relationship between resolution and required bandwidth at a glance, which is more impactful than a simple table.
+        - Report Info: Mobile Connection Options -> Goal: Compare -> Viz/Presentation: Side-by-side cards (HTML/Tailwind) -> Interaction: Static display -> Justification: Clearly presents the two options and their ideal use cases for easy comparison.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 50vh; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .nav-link { transition: all 0.2s ease-in-out; }
+        .nav-link.active { background-color: #D1C4E9; color: #4527A0; font-weight: 600; }
+        .nav-link:hover { background-color: #EDE7F6; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white border-b md:border-r border-gray-200 flex-shrink-0">
+            <div class="p-6">
+                <h1 class="text-xl font-bold text-purple-800">Streaming Manual</h1>
+                <p class="text-sm text-gray-500">for Sri Gokuldham Temple</p>
+            </div>
+            <nav id="main-nav" class="flex md:flex-col p-3 md:p-4 space-x-2 md:space-x-0 md:space-y-2">
+                <button data-target="preparation" class="nav-link w-full text-left px-4 py-2 rounded-lg active">
+                    <span class="text-2xl mr-2 align-middle">🔧</span> Preparation
+                </button>
+                <button data-target="execution" class="nav-link w-full text-left px-4 py-2 rounded-lg">
+                    <span class="text-2xl mr-2 align-middle">🔴</span> Execution
+                </button>
+                <button data-target="reference" class="nav-link w-full text-left px-4 py-2 rounded-lg">
+                    <span class="text-2xl mr-2 align-middle">📚</span> Reference
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+
+            <!-- Preparation Section -->
+            <section id="preparation" class="content-section active">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-purple-900 mb-2">Phase 1: Preparation</h2>
+                    <p class="text-lg text-gray-600 mb-8">This section covers everything you need to do before the day of the event. Proper preparation is the key to a smooth and professional live stream. Work through these checklists and guides to set up your hardware, software, and team for success.</p>
+                    
+                    <div class="space-y-8">
+                        <!-- Prerequisites -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">✅ Prerequisites Checklist</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>Verified YouTube Channel</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>Computer with OBS Studio</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>Mobile Cameras & Tripods</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>External Microphone</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>Power Banks & Cables</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"> <span>Stable Internet Connection</span></label>
+                            </div>
+                        </div>
+
+                        <!-- OBS Setup -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">🖥️ OBS Studio Setup Guide</h3>
+                            <p class="mb-4">OBS is your virtual control room. Here's how to get it ready. We'll connect your cameras and set the stream quality.</p>
+                            <div class="space-y-4">
+                                <h4 class="font-semibold">Connecting Mobile Cameras</h4>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                        <h5 class="font-bold">🏠 On Local Wi-Fi (LAN)</h5>
+                                        <p class="text-sm">Use apps like <strong class="text-purple-700">DroidCam</strong> or <strong class="text-purple-700">NDI HX Camera</strong>. Install the app on your phone and the client on your computer. Add it as a "Video Capture" or "NDI" source in OBS.</p>
+                                    </div>
+                                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <h5 class="font-bold">🌐 On Mobile Data / Remote</h5>
+                                        <p class="text-sm">Use <strong class="text-green-700">VDO.Ninja</strong>. Open the website on your phone's browser, get a link, and add it as a "Browser Source" in OBS. No app install needed.</p>
+                                    </div>
+                                </div>
+                                <h4 class="font-semibold pt-4">Stream Quality Settings</h4>
+                                <p class="mb-4">Balancing stream quality with your internet speed is crucial. Use this chart to visualize the relationship. Find your upload speed from `speedtest.net` and choose a bitrate that is roughly 75% of it for stability.</p>
+                                <div class="chart-container">
+                                    <canvas id="bitrateChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Planning -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">🗓️ Event Planning & Preparation</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold">Team Roles:</h4>
+                                    <p class="text-sm text-gray-600">Assign clear roles. Everyone should know their responsibilities before the event starts.</p>
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li><strong>Camera Team:</strong> Arrives early, sets up shots, stays late.</li>
+                                        <li><strong>OBS Operator:</strong> Manages scenes and the stream itself.</li>
+                                        <li><strong>Audio Engineer:</strong> Focuses on clear sound.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Content Preparation:</h4>
+                                    <p class="text-sm text-gray-600">Prepare all banners, logos, slideshows, and pre-roll countdown videos in advance. Add them to OBS as 'Image' or 'Media' sources.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Execution Section -->
+            <section id="execution" class="content-section">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-red-700 mb-2">Phase 2: Execution</h2>
+                    <p class="text-lg text-gray-600 mb-8">It's event day! This section is your action plan. Follow this checklist right before going live, and use the guides to start, manage, and end your stream smoothly.</p>
+
+                    <div class="space-y-8">
+                         <!-- Pre-Stream Checklist -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">🚨 Final Pre-Stream Checklist</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>Internet Check:</strong> Speed is stable and sufficient.</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>Audio Check:</strong> All mics tested, levels are good (in the green/yellow).</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>Video Check:</strong> All cameras are active, focused, and well-lit.</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>OBS Settings:</strong> Correct Stream Key is pasted from YouTube.</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>YouTube Dashboard:</strong> Title, description, and privacy are correct.</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>Notifications:</strong> Disabled on ALL streaming devices.</span></label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"><span><strong>Test Stream:</strong> Completed a short, private test stream successfully.</span></label>
+                            </div>
+                        </div>
+
+                        <!-- Going Live Steps -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">🚀 Going Live: The Process</h3>
+                            <ol class="list-decimal list-inside space-y-3">
+                                <li>In OBS Studio, click <strong class="text-red-700">"Start Streaming"</strong>. This sends your feed to YouTube.</li>
+                                <li>Go to your YouTube Live Control Room. Wait for the preview to appear and for "Stream Health" to show <strong class="text-green-600">"Excellent connection"</strong>.</li>
+                                <li>When ready, click the <strong class="bg-red-600 text-white px-2 py-1 rounded">"Go Live"</strong> button on the YouTube website. You are now live to the public!</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- During/Ending Stream -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">📡 During & After the Stream</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-semibold">During the Stream:</h4>
+                                    <ul class="list-disc list-inside mt-2 text-sm">
+                                        <li>Constantly monitor stream health on YouTube.</li>
+                                        <li>Keep an eye on audio levels in OBS.</li>
+                                        <li>Switch between scenes for a dynamic broadcast.</li>
+                                    </ul>
+                                </div>
+                                 <div>
+                                    <h4 class="font-semibold">Ending the Stream:</h4>
+                                     <ul class="list-disc list-inside mt-2 text-sm">
+                                        <li>First, click <strong class="text-red-700">"Stop Streaming"</strong> in OBS.</li>
+                                        <li>Then, click <strong class="text-red-700">"End Stream"</strong> in the YouTube dashboard.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Reference Section -->
+            <section id="reference" class="content-section">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-blue-800 mb-2">Phase 3: Reference & Learning</h2>
+                    <p class="text-lg text-gray-600 mb-8">Use this section to solve common problems and find tips for improving your future streams. Refer to the troubleshooting guide when issues arise, and review the best practices to elevate your production quality.</p>
+                    
+                    <div class="space-y-8">
+                        <!-- Troubleshooting -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                             <h3 class="text-xl font-semibold mb-4">🤔 Troubleshooting Common Issues</h3>
+                             <p class="text-sm text-gray-600 mb-4">Click on a problem to see the solution.</p>
+                             <div id="accordion-container" class="space-y-2">
+                                <div class="accordion-item border border-gray-200 rounded-lg">
+                                    <button class="accordion-header w-full text-left font-semibold p-4 flex justify-between items-center hover:bg-gray-50">
+                                        Lagging / Buffering Stream
+                                        <span class="transform transition-transform duration-300">▼</span>
+                                    </button>
+                                    <div class="accordion-content px-4 pb-4 text-gray-700">
+                                        <p>This is usually an internet or computer performance issue.</p>
+                                        <ul class="list-disc list-inside mt-2 space-y-1">
+                                            <li><strong>Solution 1:</strong> Lower your video bitrate in OBS (`Settings > Output`).</li>
+                                            <li><strong>Solution 2:</strong> Close all other programs on your computer.</li>
+                                            <li><strong>Solution 3:</strong> Use a wired ethernet connection instead of Wi-Fi.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="accordion-item border border-gray-200 rounded-lg">
+                                    <button class="accordion-header w-full text-left font-semibold p-4 flex justify-between items-center hover:bg-gray-50">
+                                        No Audio
+                                        <span class="transform transition-transform duration-300">▼</span>
+                                    </button>
+                                    <div class="accordion-content px-4 pb-4 text-gray-700">
+                                        <p>Check your connections and OBS settings.</p>
+                                        <ul class="list-disc list-inside mt-2 space-y-1">
+                                            <li><strong>Solution 1:</strong> Ensure the correct microphone is added as an "Audio Input Capture" source in OBS.</li>
+                                            <li><strong>Solution 2:</strong> Look at the Audio Mixer in OBS. Is the mic muted? Are the levels moving when you talk?</li>
+                                            <li><strong>Solution 3:</strong> Check the physical microphone connection and ensure it's turned on and has batteries.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                 <div class="accordion-item border border-gray-200 rounded-lg">
+                                    <button class="accordion-header w-full text-left font-semibold p-4 flex justify-between items-center hover:bg-gray-50">
+                                        No Video
+                                        <span class="transform transition-transform duration-300">▼</span>
+                                    </button>
+                                    <div class="accordion-content px-4 pb-4 text-gray-700">
+                                        <p>The camera source isn't reaching OBS.</p>
+                                        <ul class="list-disc list-inside mt-2 space-y-1">
+                                            <li><strong>Solution 1:</strong> In OBS, check if the source is visible (the 'eye' icon is on).</li>
+                                            <li><strong>Solution 2:</strong> Make sure the camera app (DroidCam, etc.) is running on your phone and connected to the same network.</li>
+                                            <li><strong>Solution 3:</strong> Check all physical cables and adapters.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+
+                        <!-- Best Practices -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-semibold mb-4">⭐ Best Practices for Quality Streaming</h3>
+                            <ul class="list-none space-y-3">
+                                <li class="flex items-start"><span class="text-blue-500 mr-3 text-xl">🧪</span><div><strong>Test, Test, Test:</strong> Always do a full, private test stream before the real event. There are no substitutes for this.</div></li>
+                                <li class="flex items-start"><span class="text-blue-500 mr-3 text-xl">💡</span><div><strong>Good Lighting is Key:</strong> Ensure main subjects are well-lit from the front. More light is almost always better.</div></li>
+                                <li class="flex items-start"><span class="text-blue-500 mr-3 text-xl">🎤</span><div><strong>Prioritize Audio:</strong> Viewers will tolerate poor video but not poor audio. An external microphone is the best investment you can make.</div></li>
+                                <li class="flex items-start"><span class="text-blue-500 mr-3 text-xl">🕸️</span><div><strong>Wired Connection:</strong> If possible, connect the main streaming computer to the internet via an ethernet cable. It's far more reliable than Wi-Fi.</div></li>
+                                <li class="flex items-start"><span class="text-blue-500 mr-3 text-xl">🔄</span><div><strong>Review & Improve:</strong> Watch your past streams. What could be better next time? Note down ideas for improvement.</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Navigation
+            const nav = document.getElementById('main-nav');
+            const navLinks = nav.querySelectorAll('button');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            nav.addEventListener('click', (e) => {
+                const targetButton = e.target.closest('button');
+                if (!targetButton) return;
+
+                const targetId = targetButton.dataset.target;
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                targetButton.classList.add('active');
+
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+
+            // Accordion
+            const accordionContainer = document.getElementById('accordion-container');
+            if(accordionContainer) {
+                accordionContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.accordion-header');
+                    if (!header) return;
+
+                    const item = header.parentElement;
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span');
+
+                    // Close other items
+                    const allItems = accordionContainer.querySelectorAll('.accordion-item');
+                    allItems.forEach(i => {
+                        if (i !== item) {
+                            i.querySelector('.accordion-content').style.maxHeight = null;
+                            i.querySelector('.accordion-header span').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Toggle current item
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            }
+
+
+            // Chart.js Bitrate Visualization
+            const ctx = document.getElementById('bitrateChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['480p (SD)', '720p (HD)', '1080p (Full HD)'],
+                        datasets: [{
+                            label: 'Recommended Video Bitrate (kbps)',
+                            data: [2500, 4000, 9000],
+                            backgroundColor: [
+                                'rgba(179, 157, 219, 0.6)',
+                                'rgba(126, 87, 194, 0.6)',
+                                'rgba(81, 45, 168, 0.6)',
+                            ],
+                            borderColor: [
+                                'rgba(179, 157, 219, 1)',
+                                'rgba(126, 87, 194, 1)',
+                                'rgba(81, 45, 168, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Bitrate in kbps'
+                                }
+                            },
+                             x: {
+                                title: {
+                                    display: true,
+                                    text: 'Output Resolution'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + ' kbps';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
